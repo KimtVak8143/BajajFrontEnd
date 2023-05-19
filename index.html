@@ -1,1 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Data Table</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <table id="employeeTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Designation</th>
+                <th>Skills</th>
+                <th>Projects</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be dynamically populated here -->
+        </tbody>
+    </table>
 
+    <script>
+        // Make an API call to retrieve the JSON data
+        fetch('https://raw.githubusercontent.com/dixitsoham7/dixitsoham7.github.io/main/index.json')
+            .then(response => response.json())
+            .then(data => {
+                const employees = data.employees;
+
+                // Loop through each employee and populate the table
+                employees.forEach(employee => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${employee.id}</td>
+                        <td>${employee.name}</td>
+                        <td>${employee.designation}</td>
+                        <td>${employee.skills.join(', ')}</td>
+                        <td>${renderProjects(employee.projects)}</td>
+                    `;
+                    document.getElementById('employeeTable').appendChild(row);
+                });
+            })
+            .catch(error => console.error(error));
+
+        function renderProjects(projects) {
+            // Loop through each project and render project details
+            let projectHtml = '';
+            projects.forEach(project => {
+                projectHtml += `
+                    <strong>${project.name}</strong>
+                    <p>${project.description}</p>
+                    <ul>
+                        ${renderTeam(project.team)}
+                        ${renderTasks(project.tasks)}
+                    </ul>
+                `;
+            });
+            return projectHtml;
+        }
+
+        function renderTeam(team) {
+            // Loop through each team member and render team details
+            let teamHtml = '';
+            team.forEach(member => {
+                teamHtml += `
+                    <li>${member.name ? member.name : 'Unknown'} - ${member.role}</li>
+                `;
+            });
+            return teamHtml;
+        }
+
+        function renderTasks(tasks) {
+            // Loop through each task and render task details
+            let tasksHtml = '';
+            tasks.forEach(task => {
+                tasksHtml += `
+                    <li>${task.name} - ${task.status ? task.status : 'Unknown'}</li>
+                `;
+            });
+            return tasksHtml;
+        }
+    </script>
+</body>
+</html>
